@@ -1,9 +1,4 @@
 ====================================================
-PART 1: DEVELOPMENT ENVIRONMENT SETUP
-====================================================
-
-
-====================================================
 PART 4: PROJECT INVESTIGATION
 1. What is Spring Boot?
     * Spring Boot is a framework built on top of Java that makes it easier and faster to
