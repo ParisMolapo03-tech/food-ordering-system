@@ -56,3 +56,5 @@ PART 4: PROJECT INVESTIGATION
 
      ====================================================
 
+Category API completed and tested successfully.
+
