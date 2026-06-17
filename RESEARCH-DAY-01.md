@@ -59,3 +59,27 @@
 | GET    | /api/categories/{id} | -          |
 | PUT    | /api/categories/{id} | { "name" } |
 | DELETE | /api/categories/{id} | -          |
+
+# SELF-QUIZ
+## Q1. Why ResponseEntity instead of returning the object?
+        * ResponseEntity lets us control the HTTP status code ourselves instead of always returning 200. For 
+          example when creating we return 201, when deleting we return 204.
+
+## Q2. What status should a successful DELETE return? Why?
+        * A successful DELETE should return 204 No Content because the resource has been removed and there is 
+          nothing left to return to the client.
+
+## Q3. Update only one field — PUT or PATCH?
+        * PATCH is correct for updating one field because PUT replaces the entire resource. PATCH only updates
+          what you send.
+
+## Q4.  What happens if you forget @Valid on the controller?
+        * If you forget @Valid, all the validation annotations on the DTO are ignored and invalid data gets
+          saved to the database.
+
+## Q5. Why must update/delete have {id} in the URL but create does not?
+        * Update and delete need {id} because they target an existing record. Create does not need
+          it because the database generates the id automatically when the new record is saved.
+
+
+
