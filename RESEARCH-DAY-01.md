@@ -48,3 +48,14 @@
         * Optional is a wrapper that handles the case where a value might not exist. 
           findById returns Optional because the ID might not exist in the database. Instead 
           of crashing, Optional lets us handle the missing case cleanly by throwing a proper exception.
+
+
+## Endpoints
+
+| Method | URL                  | Body       |
+|--------|----------------------|------------|
+| POST   | /api/categories      | { "name" } |
+| GET    | /api/categories      | -          |
+| GET    | /api/categories/{id} | -          |
+| PUT    | /api/categories/{id} | { "name" } |
+| DELETE | /api/categories/{id} | -          |
