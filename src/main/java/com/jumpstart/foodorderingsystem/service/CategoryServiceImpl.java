@@ -55,22 +55,25 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto updateCategory(Long id, CategoryDto dto) {
-        // Find category or throw exception if not found
         Optional<Category> optional = categoryRepository.findById(id);
         if (optional.isEmpty()) {
             throw new CategoryNotFoundException("Category with id " + id + " not found");
         }
-        // Update the name
         Category category = optional.get();
         category.setName(dto.getName());
-
-        // Save updated category
         Category updated = categoryRepository.save(category);
-
-        // Return updated DTO
         CategoryDto updatedDto = new CategoryDto();
         updatedDto.setId(updated.getId());
         updatedDto.setName(updated.getName());
         return updatedDto;
+    }
+
+    @Override
+    public void deleteCategory(Long id) {
+        Optional<Category> optional = categoryRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id " + id + " not found");
+        }
+        categoryRepository.deleteById(id);
     }
 }

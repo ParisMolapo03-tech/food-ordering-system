@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
-// The controller receives HTTP requests and passes them to the service.
-// It never talks to the database directly.
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
@@ -44,5 +42,12 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody @Valid CategoryDto dto) {
         CategoryDto updated = categoryService.updateCategory(id, dto);
         return ResponseEntity.ok(updated);
+    }
+
+    // DELETE /api/categories/{id} - deletes a category
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }
