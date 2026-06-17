@@ -2,7 +2,10 @@ package com.jumpstart.foodorderingsystem.controller;
 
 import com.jumpstart.foodorderingsystem.dto.CategoryDto;
 import com.jumpstart.foodorderingsystem.service.CategoryService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import java.util.List;
 
 // The controller receives HTTP requests and passes them to the service.
@@ -11,7 +14,6 @@ import java.util.List;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    // CategoryService injected using Dependency Injection
     private final CategoryService categoryService;
 
     public CategoryController(CategoryService categoryService) {
@@ -28,5 +30,12 @@ public class CategoryController {
     @GetMapping("/{id}")
     public CategoryDto getCategoryById(@PathVariable Long id) {
         return categoryService.getCategoryById(id);
+    }
+
+    // POST /api/categories - creates a new category
+    @PostMapping
+    public ResponseEntity<CategoryDto> addCategory(@RequestBody @Valid CategoryDto dto) {
+        CategoryDto saved = categoryService.addCategory(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 }

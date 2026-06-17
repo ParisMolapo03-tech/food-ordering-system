@@ -10,4 +10,7 @@ public interface CategoryService {
 
     // Get one category by id
     CategoryDto getCategoryById(Long id);
+
+    // Create a new category
+    CategoryDto addCategory(CategoryDto dto);
 }

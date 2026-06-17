@@ -9,13 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-// This class contains the actual business logic.
-// It fetches data from the database and converts
-// Category entities into CategoryDto objects.
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    // CategoryRepository injected using Dependency Injection
     private final CategoryRepository categoryRepository;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
@@ -35,7 +31,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getCategoryById(Long id) {
-        // Find category or throw exception if not found
         Optional<Category> optional = categoryRepository.findById(id);
         if (optional.isEmpty()) {
             throw new CategoryNotFoundException("Category with id " + id + " not found");
@@ -45,5 +40,21 @@ public class CategoryServiceImpl implements CategoryService {
         dto.setId(category.getId());
         dto.setName(category.getName());
         return dto;
+    }
+
+    @Override
+    public CategoryDto addCategory(CategoryDto dto) {
+        // Map DTO to entity
+        Category category = new Category();
+        category.setName(dto.getName());
+
+        // Save to database
+        Category saved = categoryRepository.save(category);
+
+        // Map saved entity back to DTO and return
+        CategoryDto savedDto = new CategoryDto();
+        savedDto.setId(saved.getId());
+        savedDto.setName(saved.getName());
+        return savedDto;
     }
 }
