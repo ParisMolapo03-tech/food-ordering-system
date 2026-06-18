@@ -25,6 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
             CategoryDto dto = new CategoryDto();
             dto.setId(category.getId());
             dto.setName(category.getName());
+            dto.setDescription(category.getDescription());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -39,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryDto dto = new CategoryDto();
         dto.setId(category.getId());
         dto.setName(category.getName());
+        dto.setDescription(category.getDescription());
         return dto;
     }
 
@@ -46,10 +48,12 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto addCategory(CategoryDto dto) {
         Category category = new Category();
         category.setName(dto.getName());
+        category.setDescription(dto.getDescription());
         Category saved = categoryRepository.save(category);
         CategoryDto savedDto = new CategoryDto();
         savedDto.setId(saved.getId());
         savedDto.setName(saved.getName());
+        savedDto.setDescription(saved.getDescription());
         return savedDto;
     }
 
@@ -61,10 +65,12 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Category category = optional.get();
         category.setName(dto.getName());
+        category.setDescription(dto.getDescription());
         Category updated = categoryRepository.save(category);
         CategoryDto updatedDto = new CategoryDto();
         updatedDto.setId(updated.getId());
         updatedDto.setName(updated.getName());
+        updatedDto.setDescription(updated.getDescription());
         return updatedDto;
     }
 

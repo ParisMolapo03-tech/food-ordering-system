@@ -8,28 +8,21 @@ import jakarta.persistence.*;
 @Table(name = "category")
 public class Category {
 
-    // This is the primary key - it auto increments
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // This is the name of the category e.g. Fast Food, Pizza
     private String name;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    // Description of the category
+    private String description;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }
