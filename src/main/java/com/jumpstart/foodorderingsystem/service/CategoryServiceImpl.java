@@ -2,19 +2,16 @@ package com.jumpstart.foodorderingsystem.service;
 
 import com.jumpstart.foodorderingsystem.dto.CategoryDto;
 import com.jumpstart.foodorderingsystem.entity.Category;
+import com.jumpstart.foodorderingsystem.exception.CategoryNotFoundException;
 import com.jumpstart.foodorderingsystem.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-// This class implements the CategoryService interface.
-// It contains the actual business logic.
-// It fetches data from the database and converts
-// Category entities into CategoryDto objects.
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    // CategoryRepository is injected here using Dependency Injection
     private final CategoryRepository categoryRepository;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
@@ -23,16 +20,60 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getAllCategories() {
-
-        // Fetch all categories from the database
         List<Category> categories = categoryRepository.findAll();
-
-        // Convert each Category entity into a CategoryDto
         return categories.stream().map(category -> {
             CategoryDto dto = new CategoryDto();
             dto.setId(category.getId());
             dto.setName(category.getName());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public CategoryDto getCategoryById(Long id) {
+        Optional<Category> optional = categoryRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id " + id + " not found");
+        }
+        Category category = optional.get();
+        CategoryDto dto = new CategoryDto();
+        dto.setId(category.getId());
+        dto.setName(category.getName());
+        return dto;
+    }
+
+    @Override
+    public CategoryDto addCategory(CategoryDto dto) {
+        Category category = new Category();
+        category.setName(dto.getName());
+        Category saved = categoryRepository.save(category);
+        CategoryDto savedDto = new CategoryDto();
+        savedDto.setId(saved.getId());
+        savedDto.setName(saved.getName());
+        return savedDto;
+    }
+
+    @Override
+    public CategoryDto updateCategory(Long id, CategoryDto dto) {
+        Optional<Category> optional = categoryRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id " + id + " not found");
+        }
+        Category category = optional.get();
+        category.setName(dto.getName());
+        Category updated = categoryRepository.save(category);
+        CategoryDto updatedDto = new CategoryDto();
+        updatedDto.setId(updated.getId());
+        updatedDto.setName(updated.getName());
+        return updatedDto;
+    }
+
+    @Override
+    public void deleteCategory(Long id) {
+        Optional<Category> optional = categoryRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id " + id + " not found");
+        }
+        categoryRepository.deleteById(id);
     }
 }

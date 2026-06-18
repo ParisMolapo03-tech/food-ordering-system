@@ -3,11 +3,20 @@ package com.jumpstart.foodorderingsystem.service;
 import com.jumpstart.foodorderingsystem.dto.CategoryDto;
 import java.util.List;
 
-// This interface defines the contract for the service layer.
-// Any class that implements this must provide
-// a way to get all categories.
 public interface CategoryService {
 
-    // This method will return a list of all categories
+    // Get all categories
     List<CategoryDto> getAllCategories();
+
+    // Get one category by id
+    CategoryDto getCategoryById(Long id);
+
+    // Create a new category
+    CategoryDto addCategory(CategoryDto dto);
+
+    // Update an existing category
+    CategoryDto updateCategory(Long id, CategoryDto dto);
+
+    // Delete a category by id
+    void deleteCategory(Long id);
 }
