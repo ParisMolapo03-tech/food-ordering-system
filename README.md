@@ -58,3 +58,26 @@ PART 4: PROJECT INVESTIGATION
 
 Category API completed and tested successfully.
 
+## API Response Format
+
+Every endpoint returns the same JSON structure:
+
+​```json
+{
+    "statusCode": 200,
+    "message": "Category retrieved",
+    "data": {
+        "id": 1,
+        "name": "Fast Food",
+        "description": "Quick and easy meals"
+    },
+    "timestamp": "2026-06-20T08:42:11"
+}
+​```
+
+| Field | Type | Description |
+|---|---|---|
+| statusCode | int | HTTP status code e.g. 200, 201, 404 |
+| message | String | Human readable result message |
+| data | T | The actual response data |
+| timestamp | LocalDateTime | When the response was generated |

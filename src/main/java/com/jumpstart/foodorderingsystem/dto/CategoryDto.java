@@ -2,9 +2,10 @@ package com.jumpstart.foodorderingsystem.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 // DTO stands for Data Transfer Object.
 // Controls what data goes in and out of the API.
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryDto {
 
     private Long id;
