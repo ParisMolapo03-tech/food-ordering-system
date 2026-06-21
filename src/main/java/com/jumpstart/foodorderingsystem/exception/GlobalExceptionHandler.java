@@ -1,18 +1,33 @@
 package com.jumpstart.foodorderingsystem.exception;
 
+import com.jumpstart.foodorderingsystem.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-// This class handles exceptions globally across the whole application.
-// Instead of crashing with 500, it returns clean error messages.
+// Handles all exceptions globally and returns them in Response<T> format
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     // Handles CategoryNotFoundException and returns 404
     @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<String> handleCategoryNotFound(CategoryNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<Response<Void>> handleCategoryNotFound(CategoryNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Response.error(404, ex.getMessage()));
+    }
+
+    // Handles validation errors and returns 400
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Response<Void>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .findFirst()
+                .orElse("Validation failed");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Response.error(400, errorMessage));
     }
 }
