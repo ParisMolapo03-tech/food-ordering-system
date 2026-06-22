@@ -1,11 +1,10 @@
-package com.jumpstart.foodorderingsystem.service.impl;
+package com.jumpstart.foodorderingsystem.service;
 
 import com.jumpstart.foodorderingsystem.dto.MenuDto;
 import com.jumpstart.foodorderingsystem.entity.Category;
 import com.jumpstart.foodorderingsystem.entity.Menu;
 import com.jumpstart.foodorderingsystem.repository.CategoryRepository;
 import com.jumpstart.foodorderingsystem.repository.MenuRepository;
-import com.jumpstart.foodorderingsystem.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
