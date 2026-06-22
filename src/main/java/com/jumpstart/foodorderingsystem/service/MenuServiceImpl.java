@@ -1,13 +1,14 @@
-package com.jumpstart.foodorderingsystem.service;
+package com.jumpstart.foodorderingsystem.service.impl;
 
 import com.jumpstart.foodorderingsystem.dto.MenuDto;
 import com.jumpstart.foodorderingsystem.entity.Category;
 import com.jumpstart.foodorderingsystem.entity.Menu;
-import com.jumpstart.foodorderingsystem.exception.CategoryNotFoundException;
 import com.jumpstart.foodorderingsystem.repository.CategoryRepository;
 import com.jumpstart.foodorderingsystem.repository.MenuRepository;
+import com.jumpstart.foodorderingsystem.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -19,12 +20,20 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public MenuDto createMenu(MenuDto dto) {
+
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new CategoryNotFoundException(
-                        "Category with id " + dto.getCategoryId() + " not found"));
-        Menu menu = mapToEntity(dto, category);
-        Menu saved = menuRepository.save(menu);
-        return mapToDto(saved);
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        Menu menu = new Menu();
+        menu.setName(dto.getName());
+        menu.setDescription(dto.getDescription());
+        menu.setPrice(dto.getPrice());
+        menu.setImageUrl(dto.getImageUrl());
+        menu.setCategory(category);
+
+        Menu savedMenu = menuRepository.save(menu);
+
+        return mapToDto(savedMenu);
     }
 
     @Override
@@ -37,31 +46,28 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public MenuDto getMenuById(Long id) {
+
         Menu menu = menuRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(
-                        "Menu with id " + id + " not found"));
+                .orElseThrow(() -> new RuntimeException("Menu not found"));
+
         return mapToDto(menu);
     }
 
     private MenuDto mapToDto(Menu menu) {
+
         MenuDto dto = new MenuDto();
+
         dto.setId(menu.getId());
         dto.setName(menu.getName());
         dto.setDescription(menu.getDescription());
         dto.setPrice(menu.getPrice());
         dto.setImageUrl(menu.getImageUrl());
-        dto.setCategoryId(menu.getCategory().getId());
-        dto.setCategoryName(menu.getCategory().getName());
-        return dto;
-    }
 
-    private Menu mapToEntity(MenuDto dto, Category category) {
-        return Menu.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .price(dto.getPrice())
-                .imageUrl(dto.getImageUrl())
-                .category(category)
-                .build();
+        if (menu.getCategory() != null) {
+            dto.setCategoryId(menu.getCategory().getId());
+            dto.setCategoryName(menu.getCategory().getName());
+        }
+
+        return dto;
     }
 }
