@@ -56,6 +56,28 @@
         * Private mapper methods avoid code repetition. Instead of writing the same conversion code multiple 
           times, you write it once and call it wherever needed.
 
+SELF-QUIZ
+
+## Q1. Why didn't we add @OneToMany on Category for menus? (think: bidirectional vs unidirectional relationships)
+    * We only needed to access the category from a menu item, so we used a unidirectional relationship 
+      with @ManyToOne. Adding @OneToMany on Category would make the relationship bidirectional,
+      which adds extra complexity and wasn't required for this task.
+
+## Q2. What would ddl-auto = create-drop do? When would you use it?
+    * create-drop creates the database tables when the application starts and deletes them when it stops. It 
+      is useful during development and testing, but it should not be used in production because 
+      all data will be lost when the application shuts down.
+
+## Q3. If you delete a Category that has menus, what happens by default?
+    * By default, the database prevents the category from being deleted because the menu records still 
+      reference it through a foreign key. This results in a foreign key constraint error unless cascading or 
+      another delete strategy is configured.
+
+## Q4. . Why is BigDecimal better than double for storing money values?
+    * BigDecimal stores decimal values accurately without rounding errors, making it suitable for money 
+      calculations. double can produce small precision errors because it stores numbers in
+      binary floating-point format.
+
 
 
 
