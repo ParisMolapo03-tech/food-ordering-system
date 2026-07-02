@@ -3,6 +3,8 @@ package com.jumpstart.foodorderingsystem.service;
 import com.jumpstart.foodorderingsystem.dto.MenuDto;
 import com.jumpstart.foodorderingsystem.entity.Category;
 import com.jumpstart.foodorderingsystem.entity.Menu;
+import com.jumpstart.foodorderingsystem.exception.CategoryNotFoundException;
+import com.jumpstart.foodorderingsystem.exception.MenuNotFoundException;
 import com.jumpstart.foodorderingsystem.repository.CategoryRepository;
 import com.jumpstart.foodorderingsystem.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,8 @@ public class MenuServiceImpl implements MenuService {
     public MenuDto createMenu(MenuDto dto) {
 
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() ->
+                        new CategoryNotFoundException("Category not found with id: " + dto.getCategoryId()));
 
         Menu menu = new Menu();
         menu.setName(dto.getName());
@@ -37,6 +40,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public List<MenuDto> getAllMenus() {
+
         return menuRepository.findAll()
                 .stream()
                 .map(this::mapToDto)
@@ -47,7 +51,8 @@ public class MenuServiceImpl implements MenuService {
     public MenuDto getMenuById(Long id) {
 
         Menu menu = menuRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Menu not found"));
+                .orElseThrow(() ->
+                        new MenuNotFoundException("Menu not found with id: " + id));
 
         return mapToDto(menu);
     }
