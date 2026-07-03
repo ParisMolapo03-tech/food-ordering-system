@@ -4,6 +4,8 @@ import com.jumpstart.foodorderingsystem.response.Response;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -40,6 +42,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response<Void>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Response.error(409, ex.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Response<Void>> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Response.error(403, "Access denied: you do not have permission to perform this action"));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Response<Void>> handleAuthentication(AuthenticationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Response.error(401, "Unauthorized: please login to access this resource"));
     }
 
     @ExceptionHandler(RuntimeException.class)
