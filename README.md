@@ -81,3 +81,61 @@ Every endpoint returns the same JSON structure:
 | message | String | Human readable result message |
 | data | T | The actual response data |
 | timestamp | LocalDateTime | When the response was generated |
+
+====================================================
+## MENU MODULE
+
+### Menu Endpoints
+
+| Method | Path | Description | Query Params |
+|--------|------|-------------|--------------|
+| POST | /api/menu | Create a new menu item | - |
+| GET | /api/menu | Get all menus (filterable, paginated) | categoryId, search, page, size, sort |
+| GET | /api/menu/{id} | Get a single menu item by ID | - |
+| PUT | /api/menu/{id} | Update a menu item by ID | - |
+| DELETE | /api/menu/{id} | Delete a menu item by ID | - |
+
+### Category Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | /api/categories | Get all categories |
+| GET | /api/categories/{id} | Get a single category by ID |
+| POST | /api/categories | Create a new category |
+| PUT | /api/categories/{id} | Update a category |
+| DELETE | /api/categories/{id} | Delete a category (409 if menus exist) |
+
+---
+
+### Example GET /api/menu with all query params
+---
+
+### Example Page<MenuDto> Response
+
+```json
+{
+    "statusCode": 200,
+    "message": "Menus retrieved",
+    "data": {
+        "content": [
+            {
+                "id": 1,
+                "name": "Cheese Burger",
+                "description": "Beef patty with melted cheese",
+                "price": 49.99,
+                "imageUrl": "https://placehold.co/300",
+                "categoryId": 1,
+                "categoryName": "Fast Food"
+            }
+        ],
+        "totalElements": 7,
+        "totalPages": 2,
+        "number": 0,
+        "size": 5,
+        "first": true,
+        "last": false
+    },
+    "timestamp": "2026-07-02T13:44:57.736"
+}
+```
+====================================================

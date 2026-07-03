@@ -1,17 +1,19 @@
 package com.jumpstart.foodorderingsystem.service;
 
 import com.jumpstart.foodorderingsystem.dto.MenuDto;
-import java.util.List;
+import com.jumpstart.foodorderingsystem.response.Response;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-// This interface defines the contract for the menu service layer.
 public interface MenuService {
 
-    // Create a new menu item
-    MenuDto createMenu(MenuDto dto);
+    Response<MenuDto> createMenu(MenuDto dto);
 
-    // Get all menu items
-    List<MenuDto> getAllMenus();
+    Response<Page<MenuDto>> getAllMenus(Long categoryId, String search, Pageable pageable);
 
-    // Get one menu item by id
-    MenuDto getMenuById(Long id);
+    Response<MenuDto> getMenuById(Long id);
+
+    Response<MenuDto> updateMenu(Long id, MenuDto dto);
+
+    Response<String> deleteMenu(Long id);
 }

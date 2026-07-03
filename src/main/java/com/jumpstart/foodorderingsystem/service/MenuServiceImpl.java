@@ -7,10 +7,11 @@ import com.jumpstart.foodorderingsystem.exception.CategoryNotFoundException;
 import com.jumpstart.foodorderingsystem.exception.MenuNotFoundException;
 import com.jumpstart.foodorderingsystem.repository.CategoryRepository;
 import com.jumpstart.foodorderingsystem.repository.MenuRepository;
+import com.jumpstart.foodorderingsystem.response.Response;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,47 +21,69 @@ public class MenuServiceImpl implements MenuService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public MenuDto createMenu(MenuDto dto) {
+    public Response<MenuDto> createMenu(MenuDto dto) {
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + dto.getCategoryId()));
+
+        Menu menu = mapToEntity(dto, category);
+        Menu saved = menuRepository.save(menu);
+        return Response.success("Menu created successfully", mapToDto(saved));
+    }
+
+    @Override
+    public Response<Page<MenuDto>> getAllMenus(Long categoryId, String search, Pageable pageable) {
+        Page<Menu> menus;
+
+        if (categoryId != null && search != null) {
+            menus = menuRepository.findByCategoryIdAndNameContainingIgnoreCase(categoryId, search, pageable);
+        } else if (categoryId != null) {
+            menus = menuRepository.findByCategoryId(categoryId, pageable);
+        } else if (search != null) {
+            menus = menuRepository.findByNameContainingIgnoreCase(search, pageable);
+        } else {
+            menus = menuRepository.findAll(pageable);
+        }
+
+        return Response.success("Menus retrieved", menus.map(this::mapToDto));
+    }
+
+    @Override
+    public Response<MenuDto> getMenuById(Long id) {
+        Menu menu = menuRepository.findById(id)
+                .orElseThrow(() -> new MenuNotFoundException("Menu not found with id: " + id));
+        return Response.success("Menu retrieved", mapToDto(menu));
+    }
+
+    @Override
+    public Response<MenuDto> updateMenu(Long id, MenuDto dto) {
+        Menu menu = menuRepository.findById(id)
+                .orElseThrow(() -> new MenuNotFoundException("Menu not found with id: " + id));
 
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() ->
-                        new CategoryNotFoundException("Category not found with id: " + dto.getCategoryId()));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + dto.getCategoryId()));
 
-        Menu menu = new Menu();
         menu.setName(dto.getName());
         menu.setDescription(dto.getDescription());
         menu.setPrice(dto.getPrice());
         menu.setImageUrl(dto.getImageUrl());
         menu.setCategory(category);
 
-        Menu savedMenu = menuRepository.save(menu);
-
-        return mapToDto(savedMenu);
+        Menu updated = menuRepository.save(menu);
+        return Response.success("Menu updated successfully", mapToDto(updated));
     }
 
     @Override
-    public List<MenuDto> getAllMenus() {
-
-        return menuRepository.findAll()
-                .stream()
-                .map(this::mapToDto)
-                .toList();
-    }
-
-    @Override
-    public MenuDto getMenuById(Long id) {
-
+    public Response<String> deleteMenu(Long id) {
         Menu menu = menuRepository.findById(id)
-                .orElseThrow(() ->
-                        new MenuNotFoundException("Menu not found with id: " + id));
-
-        return mapToDto(menu);
+                .orElseThrow(() -> new MenuNotFoundException("Menu not found with id: " + id));
+        menuRepository.delete(menu);
+        return Response.success("Menu deleted successfully", "Deleted menu with id: " + id);
     }
+
+    // ---- Private helper methods ----
 
     private MenuDto mapToDto(Menu menu) {
-
         MenuDto dto = new MenuDto();
-
         dto.setId(menu.getId());
         dto.setName(menu.getName());
         dto.setDescription(menu.getDescription());
@@ -73,5 +96,15 @@ public class MenuServiceImpl implements MenuService {
         }
 
         return dto;
+    }
+
+    private Menu mapToEntity(MenuDto dto, Category category) {
+        return Menu.builder()
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .price(dto.getPrice())
+                .imageUrl(dto.getImageUrl())
+                .category(category)
+                .build();
     }
 }
