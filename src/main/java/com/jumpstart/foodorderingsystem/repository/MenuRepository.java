@@ -1,11 +1,17 @@
 package com.jumpstart.foodorderingsystem.repository;
 
 import com.jumpstart.foodorderingsystem.entity.Menu;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-// Repository for Menu entity.
-// Extends JpaRepository to get free database operations
-// like save, findAll, findById and deleteById.
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
+    Page<Menu> findByCategoryId(Long categoryId, Pageable pageable);
+
+    Page<Menu> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    Page<Menu> findByCategoryIdAndNameContainingIgnoreCase(Long categoryId, String name, Pageable pageable);
+
+    boolean existsByCategoryId(Long categoryId);
 }

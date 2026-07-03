@@ -1,6 +1,7 @@
 package com.jumpstart.foodorderingsystem.exception;
 
 import com.jumpstart.foodorderingsystem.response.Response;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,21 +13,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<Response<Void>> handleCategoryNotFound(CategoryNotFoundException ex) {
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Response.error(404, ex.getMessage()));
     }
 
     @ExceptionHandler(MenuNotFoundException.class)
     public ResponseEntity<Response<Void>> handleMenuNotFound(MenuNotFoundException ex) {
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Response.error(404, ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response<Void>> handleValidationErrors(MethodArgumentNotValidException ex) {
-
         String errorMessage = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -36,5 +34,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Response.error(400, errorMessage));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Response<Void>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Response.error(409, ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Response<Void>> handleGenericException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Response.error(500, "An unexpected error occurred: " + ex.getMessage()));
     }
 }

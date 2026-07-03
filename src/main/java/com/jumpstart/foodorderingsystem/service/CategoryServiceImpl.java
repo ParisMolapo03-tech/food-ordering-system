@@ -4,82 +4,74 @@ import com.jumpstart.foodorderingsystem.dto.CategoryDto;
 import com.jumpstart.foodorderingsystem.entity.Category;
 import com.jumpstart.foodorderingsystem.exception.CategoryNotFoundException;
 import com.jumpstart.foodorderingsystem.repository.CategoryRepository;
+import com.jumpstart.foodorderingsystem.repository.MenuRepository;
+import com.jumpstart.foodorderingsystem.response.Response;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final MenuRepository menuRepository;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    @Override
+    public Response<List<CategoryDto>> getAllCategories() {
+        List<CategoryDto> categories = categoryRepository.findAll()
+                .stream()
+                .map(this::mapToDto)
+                .toList();
+        return Response.success("Categories retrieved", categories);
     }
 
     @Override
-    public List<CategoryDto> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        return categories.stream().map(category -> {
-            CategoryDto dto = new CategoryDto();
-            dto.setId(category.getId());
-            dto.setName(category.getName());
-            dto.setDescription(category.getDescription());
-            return dto;
-        }).collect(Collectors.toList());
+    public Response<CategoryDto> getCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
+        return Response.success("Category retrieved", mapToDto(category));
     }
 
     @Override
-    public CategoryDto getCategoryById(Long id) {
-        Optional<Category> optional = categoryRepository.findById(id);
-        if (optional.isEmpty()) {
-            throw new CategoryNotFoundException("Category with id " + id + " not found");
+    public Response<CategoryDto> addCategory(CategoryDto dto) {
+        Category category = new Category();
+        category.setName(dto.getName());
+        category.setDescription(dto.getDescription());
+        Category saved = categoryRepository.save(category);
+        return Response.success("Category created successfully", mapToDto(saved));
+    }
+
+    @Override
+    public Response<CategoryDto> updateCategory(Long id, CategoryDto dto) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
+        category.setName(dto.getName());
+        category.setDescription(dto.getDescription());
+        Category updated = categoryRepository.save(category);
+        return Response.success("Category updated successfully", mapToDto(updated));
+    }
+
+    @Override
+    public Response<String> deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
+
+        if (menuRepository.existsByCategoryId(id)) {
+            throw new DataIntegrityViolationException("Cannot delete category — it still has menus linked to it");
         }
-        Category category = optional.get();
+
+        categoryRepository.delete(category);
+        return Response.success("Category deleted successfully", "Deleted category with id: " + id);
+    }
+
+    private CategoryDto mapToDto(Category category) {
         CategoryDto dto = new CategoryDto();
         dto.setId(category.getId());
         dto.setName(category.getName());
         dto.setDescription(category.getDescription());
         return dto;
-    }
-
-    @Override
-    public CategoryDto addCategory(CategoryDto dto) {
-        Category category = new Category();
-        category.setName(dto.getName());
-        category.setDescription(dto.getDescription());
-        Category saved = categoryRepository.save(category);
-        CategoryDto savedDto = new CategoryDto();
-        savedDto.setId(saved.getId());
-        savedDto.setName(saved.getName());
-        savedDto.setDescription(saved.getDescription());
-        return savedDto;
-    }
-
-    @Override
-    public CategoryDto updateCategory(Long id, CategoryDto dto) {
-        Optional<Category> optional = categoryRepository.findById(id);
-        if (optional.isEmpty()) {
-            throw new CategoryNotFoundException("Category with id " + id + " not found");
-        }
-        Category category = optional.get();
-        category.setName(dto.getName());
-        category.setDescription(dto.getDescription());
-        Category updated = categoryRepository.save(category);
-        CategoryDto updatedDto = new CategoryDto();
-        updatedDto.setId(updated.getId());
-        updatedDto.setName(updated.getName());
-        updatedDto.setDescription(updated.getDescription());
-        return updatedDto;
-    }
-
-    @Override
-    public void deleteCategory(Long id) {
-        Optional<Category> optional = categoryRepository.findById(id);
-        if (optional.isEmpty()) {
-            throw new CategoryNotFoundException("Category with id " + id + " not found");
-        }
-        categoryRepository.deleteById(id);
     }
 }
