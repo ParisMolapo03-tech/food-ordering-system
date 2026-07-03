@@ -139,3 +139,44 @@ Every endpoint returns the same JSON structure:
 }
 ```
 ====================================================
+
+====================================================
+## AUTH & SECURITY MODULE
+
+### Auth Endpoints
+
+| Method | Path | Who Can Call |
+|--------|------|--------------|
+| POST | /api/auth/register | Public |
+| POST | /api/auth/login | Public |
+
+### Security Rules Summary
+
+| Endpoint | Public | Customer | Admin |
+|----------|--------|----------|-------|
+| GET /api/menu/** | ✅ | ✅ | ✅ |
+| GET /api/categories/** | ✅ | ✅ | ✅ |
+| POST /api/menu/** | ❌ | ❌ | ✅ |
+| PUT /api/menu/** | ❌ | ❌ | ✅ |
+| DELETE /api/menu/** | ❌ | ❌ | ✅ |
+| POST /api/categories/** | ❌ | ❌ | ✅ |
+| PUT /api/categories/** | ❌ | ❌ | ✅ |
+| DELETE /api/categories/** | ❌ | ❌ | ✅ |
+| POST /api/auth/register | ✅ | ✅ | ✅ |
+| POST /api/auth/login | ✅ | ✅ | ✅ |
+
+### Promoting a User to ADMIN
+
+Run this SQL in MySQL Workbench:
+
+```sql
+INSERT INTO users_roles (user_id, role_id)
+SELECT u.id, r.id FROM users u, roles r
+WHERE u.email = 'your-email@test.com' AND r.name = 'ADMIN';
+```
+
+### How to Authenticate in Postman
+
+1. Send `POST /api/auth/login` with your email and password in the request body.
+2. Copy the `token` value from the response.
+3. In your request, go to **Authorization** tab → set Type to **Bearer Token** → paste the token.
